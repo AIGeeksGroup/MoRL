@@ -1,2 +1,1 @@
-# MoRL
-MoRL: Reinforced Reasoning for Unified Motion Understanding and Generation
+# MoRL: Reinforced Reasoning for Unified Motion Understanding and Generation

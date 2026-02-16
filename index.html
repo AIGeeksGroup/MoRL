@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="HXsBsK6dddZmEiX-hilffnGML0O8ErQGuDQlQt4d1-U" />
+  <title>MoRL: Reinforced Reasoning for Unified Motion Understanding and Generation</title>
+  <link rel="icon" href="images/morl_logo.png" type="image/png">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .nav-link {
+      display: inline-block;
+      margin: 0 1em;
+      color: #ddd;
+      font-weight: bold;
+      font-size: 0.95em;
+    }
+    .nav-link:hover {
+      color: white;
+    }
+    .options button {
+      display: block;
+      margin: 0.5em 0;
+      padding: 0.75em 1em;
+      text-align: left;
+      border: 1px solid #ccc;
+      background: #f8f8f8;
+      font-size: 0.95em;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s, border 0.3s;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .options button:hover {
+      background: #eef;
+    }
+    .options button.correct {
+      background: #d4edda;
+      border-color: #28a745;
+    }
+    .options button.incorrect {
+      background: #f8d7da;
+      border-color: #dc3545;
+    }
+    .feedback {
+      min-height: 1.5em;
+      font-weight: bold;
+    }
+    .trajectory {
+      position: relative;
+    }
+    .end-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 1em 2em;
+      border-radius: 5px;
+      font-size: 1.2em;
+      font-weight: bold;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+    }
+    .end-overlay.show {
+      opacity: 1;
+    }
+    @media (max-width: 900px) {
+      .examples > div {
+        flex-direction: column !important;
+        align-items: stretch !important;
+      }
+      .example {
+        max-width: 100% !important;
+      }
+    }
+    .local-examples {
+      margin-bottom: 2em;
+    }
+    .local-example {
+      max-width: 480px !important;
+      background: #fafbfc;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      padding: 1.2em 1em 1.5em 1em;
+      margin: 1.5em 1em;
+    }
+    .local-row {
+      display: flex;
+      gap: 2.5em;
+      justify-content: center;
+      margin-bottom: 1em;
+    }
+    .options {
+      margin-top: 1em;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+    .options > div {
+      flex: 1 1 0;
+      max-width: 110px;
+      min-width: 0;
+      text-align: center;
+    }
+    .options img {
+      height: 100px;
+      max-width: 90px;
+      width: 100%;
+      object-fit: cover;
+      border-radius: 5px;
+      background: #eee;
+    }
+    .trajectory img {
+      height: 110px;
+      object-fit: cover;
+      width: 100%;
+      border-radius: 6px;
+      background: #eee;
+    }
+    .temporal-img {
+      height: 110px;
+      object-fit: cover;
+      width: 100%;
+      border-radius: 6px;
+      background: #eee;
+    }
+    .local-img,
+    .local1-current-img,
+    .local1-direction-img {
+      height: 110px;
+      object-fit: cover;
+      width: 100%;
+      border-radius: 6px;
+      background: #eee;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>MoRL: Reinforced Reasoning for Unified Motion Understanding and Generation</h1>
+    <!-- <h2>ACL 2026</h2> -->
+    <p class="authors" style="margin-top: 0.5em;">
+      Hongpeng Wang<sup>1*</sup> &nbsp;&nbsp;
+      <a href="https://steve-zeyu-zhang.github.io/" style="color: white;">Zeyu Zhang</a><sup>2*†</sup> &nbsp;&nbsp;
+      Wenhao Li<sup>3</sup> &nbsp;&nbsp;
+      Hao Tang<sup>2‡</sup>
+    </p>
+    <p class="affiliations">
+      <sup>1</sup>The University of Sydney &nbsp;&nbsp;
+      <sup>2</sup>Peking University &nbsp;&nbsp;
+      <sup>3</sup>Nanyang Technological University
+    </p>
+    <p class="footnotes">
+      <sup>*</sup>Equal contribution. &nbsp;
+      <sup>†</sup>Project lead. &nbsp;
+      <sup>‡</sup>Corresponding author.
+    </p>
+    <div class="links" style="margin-top: 1em;">
+      <a href="#" class="nav-link button-link">arXiv</a>
+      <a href="https://github.com/AIGeeksGroup/MoRL" class="nav-link button-link" target="_blank">GitHub</a>
+      <a href="https://huggingface.co/AIGeeksGroup/MoRL" class="nav-link button-link" target="_blank">Model</a>
+      <a href="https://huggingface.co/datasets/AIGeeksGroup/MoUnd-MoGen-CoT-140K" class="nav-link button-link" target="_blank">Datasets</a>
+    </div>
+  </header>
+
+  <main>
+
+
+
+
+    <section class="vis">
+      <h2>Visualization</h2>
+      <div class="video-grid">
+        <figure class="video-card">
+          <video autoplay controls muted loop playsinline src="morl_videos/A_person_backflips_three_times_in_a_row..mp4"></video>
+          <figcaption>A person backflips three times in a row.</figcaption>
+        </figure>
+        <figure class="video-card">
+          <video autoplay controls muted loop playsinline src="morl_videos/A_person_is_practicing_karate_moves_across_the_floor..mp4"></video>
+          <figcaption>A person is practicing karate moves across the floor.</figcaption>
+        </figure>
+        <figure class="video-card">
+          <video autoplay controls muted loop playsinline src="morl_videos/A_person_looks_to_the_left_then_kicks_something_with_their_right_foot..mp4"></video>
+          <figcaption>A person looks to the left then kicks something with their right foot.</figcaption>
+        </figure>
+        <figure class="video-card">
+          <video autoplay controls muted loop playsinline src="morl_videos/A_person_walks_along_a_curved_path_to_the_right..mp4"></video>
+          <figcaption>A person walks along a curved path to the right.</figcaption>
+        </figure>
+        <figure class="video-card">
+          <video autoplay controls muted loop playsinline src="morl_videos/A_person_walks_forward_slightly_shifting_to_the_right..mp4"></video>
+          <figcaption>A person walks forward slightly shifting to the right.</figcaption>
+        </figure>
+        <figure class="video-card">
+          <video autoplay controls muted loop playsinline src="morl_videos/A_person_walks_forward_with_a_side-to-side_sway..mp4"></video>
+          <figcaption>A person walks forward with a side-to-side sway.</figcaption>
+        </figure>
+        <figure class="video-card">
+          <video autoplay controls muted loop playsinline src="morl_videos/A_person_walks_up_stairs..mp4"></video>
+          <figcaption>A person walks up stairs.</figcaption>
+        </figure>
+        <figure class="video-card">
+          <video autoplay controls muted loop playsinline src="morl_videos/Walking_slowly_along_the_path_shaped_like_an_infinity_symbol..mp4"></video>
+          <figcaption>Walking slowly along the path shaped like an infinity symbol.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="method">
+      <h2>Method</h2>
+      <figure class="method-figure">
+        <img src="images/overall_page-0001.jpg" alt="Overview diagram of the MoRL framework">
+        <figcaption>
+          <strong>Overview of MoRL.</strong> Our framework unifies motion understanding and generation under a reinforcement learning paradigm. Motion and text inputs are tokenized into a shared representation space. A hierarchical post-training pipeline first applies SFT on large-scale synthetic CoT datasets to align motion sequences with reasoning traces and concise descriptions, then employs reinforcement learning with verifiable rewards (RLVR) to refine outputs, enhancing semantic alignment, reasoning coherence, physical plausibility, and text–motion consistency. At inference, the Chain-of-Motion (CoM) decoding strategy enables step-by-step reasoning and reflection, improving both motion understanding and perceptually realistic motion generation.
+        </figcaption>
+      </figure>
+
+      <br><br>
+
+      <figure class="method-figure">
+        <img src="images/cot_data_engine_page-0001.jpg" alt="CoT">
+        <figcaption>
+          <strong>Motion CoT data engine.</strong> Build based on MotionHubV2 dataset, one branch (MoUnd-CoT-140K) uses motion sequences and captions with Gemini to construct reasoning chains for understanding, while the other (MoGen-CoT-140K) builds reasoning chains for generation.
+        </figcaption>
+      </figure>
+
+    </section>
+
+
+
+    <section class="bibtex">
+      <h3>BibTeX</h3>
+      <pre style="white-space: pre-wrap; text-align: justify;">
+
+@article{ouyang2025motion,
+  title={Motion-r1: Chain-of-thought reasoning and reinforcement learning for human motion generation},
+  author={Ouyang, Runqi and Li, Haoyun and Zhang, Zhenyuan and Wang, Xiaofeng and Zhu, Zheng and Huang, Guan and Wang, Xingang},
+  journal={arXiv e-prints},
+  pages={arXiv--2506},
+  year={2025}
+}
+      </pre>
+    </section>
+  </main>
+
+  <footer>
+    <p>MoRL: Reinforced Reasoning for Unified Motion Understanding and Generation</p>
+  </footer>
+
+<script>
+  function checkAnswer(correct, prefix, selected) {
+    const feedback = document.getElementById(`${prefix}-feedback`);
+    const buttons = document.querySelectorAll(`.${prefix}-options button`);
+    buttons.forEach(btn => {
+      btn.classList.remove('correct', 'incorrect');
+      if (btn.dataset.choice === correct) {
+        btn.classList.add('correct');
+      } else if (btn.dataset.choice === selected) {
+        btn.classList.add('incorrect');
+      }
+    });
+    if (selected === correct) {
+      feedback.textContent = '✅ Correct!';
+      feedback.style.color = 'green';
+    } else {
+      feedback.textContent = `❌ Incorrect. The correct answer is ${correct}.`;
+      feedback.style.color = 'red';
+    }
+  }
+
+  function cycleImages(prefix, count) {
+    let index = 1;
+    let isPaused = false;
+    
+    const trajectory = document.querySelector(`#${prefix}-img`).parentElement;
+    const overlay = document.createElement('div');
+    overlay.className = 'end-overlay';
+    overlay.textContent = 'End';
+    trajectory.appendChild(overlay);
+    
+    function updateImage() {
+      const img = document.getElementById(`${prefix}-img`);
+      if (img) {
+        if (index > count) {
+          //
+          isPaused = true;
+          overlay.classList.add('show');
+          setTimeout(() => {
+            index = 1;
+            img.src = `assets/${prefix}/frame${index}.png`;
+            overlay.classList.remove('show');
+            isPaused = false;
+          }, 1000); // 
+        } else {
+          img.src = `assets/${prefix}/frame${index}.png`;
+          index++;
+        }
+      }
+    }
+
+    setInterval(() => {
+      if (!isPaused) {
+        updateImage();
+      }
+    }, 1500);
+  }
+
+  cycleImages('global1', 6);  // 
+  cycleImages('global2', 5);  // 
+  
+  cycleImages('temporal1', 3);  // 
+  cycleImages('temporal2', 6);  //
+</script>
+</body>
+</html>

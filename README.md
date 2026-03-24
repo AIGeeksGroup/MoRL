@@ -180,7 +180,3 @@ If you find this project useful, please consider citing:
 ## Acknowledgement
 
 We thank the open-source communities behind Motion-Agent, MotionGPT, Qwen, and related motion-language benchmarks for their foundational contributions.
-
----
-
-If you are reproducing MoRL from a modified Motion-Agent baseline, we recommend tracking your exact data format, checkpoint lineage, and reward configuration in experiment logs for better reproducibility.

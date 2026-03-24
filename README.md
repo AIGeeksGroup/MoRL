@@ -67,14 +67,12 @@ pip install -r requirements.txt
 ### Prepare Basic Resources
 
 This repo provides helper scripts under `prepare/`:
-- `prepare/download_ckpt.sh`
 - `prepare/download_extractor.sh`
 - `prepare/download_glove.sh`
 
 Run with bash:
 
 ```bash
-bash prepare/download_glove.sh
 bash prepare/download_extractor.sh
 bash prepare/download_ckpt.sh
 ```

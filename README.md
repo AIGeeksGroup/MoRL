@@ -4,6 +4,8 @@
 >
 > *Equal contribution. <sup>†</sup>Project lead. <sup>‡</sup>Corresponding author.
 >
+>***ACL 2026 Main Reviewed (3.5/3.5/2.5 - BC/BC/BF)***
+>
 > ### [Paper](https://arxiv.org/abs/2602.14534) | [Website](https://aigeeksgroup.github.io/MoRL) | [Data](https://huggingface.co/datasets/AIGeeksGroup/MoUnd-MoGen-CoT-140K) | [Model](https://huggingface.co/AIGeeksGroup/MoRL)
 
 
